@@ -28,7 +28,7 @@ logger_format = '%(asctime)s | %(levelname)s | %(module)s | %(message)s'
 logger_dateformat = "%Y-%m-%d %H:%M:%S"
 
 # Path to where the files were downloaded
-vv_path = "/Users/caiwingfield/evaluation/tests/Vinson Vigliocco 2008"
+vv_path = "/Users/caiwingfield/evaluation/tests/Vinson Vigliocco 2008/"
 
 # Filenames of the matrices
 matrix_filenames = [
@@ -60,6 +60,8 @@ class WordFeatureMatrix(object):
         self._id2word: dict = None
         self._feature2id: dict = None
         self._id2feature: dict = None
+
+    # Public properties backed by private state
 
     @property
     def matrix(self) -> numpy.ndarray:
@@ -130,6 +132,8 @@ class WordFeatureMatrix(object):
             self._load_feature_list()
         assert self._id2feature is not None
         return self._id2feature
+
+    # Load data
 
     def _load_matrix(self):
         """
@@ -236,6 +240,8 @@ class WordFeatureMatrix(object):
         self._id2feature = id2feature
         self._feature2id = dict((v, k) for k, v in id2feature.items())
 
+    # Query data
+
     def features_for_word(self, word: str) -> List[str]:
         """
         List of features for a word.
@@ -261,6 +267,8 @@ class WordFeatureMatrix(object):
         words.sort(key=lambda f_c: f_c[1], reverse=True)
 
         return [word for word, count in words]
+
+    # Save data
 
     def save_word_list(self, word_list_out_filepath: str):
         """
