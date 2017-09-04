@@ -14,23 +14,27 @@ python make_human_readable.py --help
 
 Available operations:
 
-`python make_human_readable.py <path-to-vv-files> -w <feature>`
-:   Lists all words for a particular feature, ordered by the number of subjects that produced the feature for that word.
+__`python make_human_readable.py <path-to-vv-files> -w <feature>`__
 
-`python make_human_readable.py <path-to-vv-files> -f <word>`
-:   Lists all features for a particular word, ordered by the number of subjects that produced the feature for that word.
+> Lists all words for a particular feature, ordered by the number of subjects that produced the feature for that word.
 
-`python make_human_readable.py <path-to-vv-files> --savewords <path>`
-:   Saves a list of words and features in the specified file (which should not exist).
-:   Format of the file will be:
-:   `word: feature1, feature2, ...`
-:   on each line.
+__`python make_human_readable.py <path-to-vv-files> -f <word>`__
 
-`python make_human_readable.py <path-to-vv-files> --savefeatures <path>`
-:   Saves a list of features and words in the specified file (which should not exist).
-:   Format of the file will be:
-:   `feature: word1, word2, ...`
-:   on each line.
+> Lists all features for a particular word, ordered by the number of subjects that produced the feature for that word.
+
+__`python make_human_readable.py <path-to-vv-files> --savewords <path>`__
+
+> Saves a list of words and features in the specified file (which should not exist).  
+> Format of the file will be:  
+> `word: feature1, feature2, ...`  
+> on each line.
+
+__`python make_human_readable.py <path-to-vv-files> --savefeatures <path>`__
+
+> Saves a list of features and words in the specified file (which should not exist).  
+> Format of the file will be:  
+> `feature: word1, word2, ...`  
+> on each line.
 
 
 ## Requirements
