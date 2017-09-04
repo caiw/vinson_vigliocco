@@ -249,24 +249,32 @@ class WordFeatureMatrix(object):
         List of features for a word.
         """
         word_id = self.word2id[word]
+        # words are 1-indexed, matrix is 0-indexed
         word_row = self.matrix[word_id - 1]
-        feature_cols = [i for i, e in enumerate(word_row) if e != 0]
+        feature_cols = [feature_col for feature_col, participant_count in enumerate(word_row) if participant_count > 0]
 
+        # Pair features with their participant count
+        # features are 1-indexed, matrix is 0-indexed
         features = [(self.id2feature[c + 1], word_row[c]) for c in feature_cols]
-        features.sort(key=lambda w_c: w_c[1], reverse=True)
+        # And sort by the count
+        features.sort(key=lambda feature_count_pair: feature_count_pair[1], reverse=True)
 
         return [feature for feature, count in features]
 
     def words_for_feature(self, feature: str) -> List[str]:
         """
-        List of words possessing a feature
+        List of words possessing a feature.
         """
         feature_id = self.feature2id[feature]
+        # features are 1-indexed, matrix is 0-indexed
         feature_col = self.matrix[:, feature_id - 1]
-        word_rows = [i for i, e in enumerate(feature_col) if e != 0]
+        word_rows = [word_row for word_row, participant_count in enumerate(feature_col) if participant_count > 0]
 
+        # Pair words with their participant count
+        # words are 1-indexed, matrix is 0-indexed
         words = [(self.id2word[r + 1], feature_col[r]) for r in word_rows]
-        words.sort(key=lambda f_c: f_c[1], reverse=True)
+        # And sort by the count
+        words.sort(key=lambda word_count_pair: word_count_pair[1], reverse=True)
 
         return [word for word, count in words]
 
