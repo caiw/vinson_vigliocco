@@ -18,6 +18,7 @@ import logging
 import os
 import re
 import sys
+import argparse
 
 from typing import List
 
@@ -26,9 +27,6 @@ import numpy
 logger = logging.getLogger()
 logger_format = '%(asctime)s | %(levelname)s | %(module)s | %(message)s'
 logger_dateformat = "%Y-%m-%d %H:%M:%S"
-
-# Path to where the files were downloaded
-vv_path = "/Users/caiwingfield/evaluation/tests/Vinson Vigliocco 2008/"
 
 # Filenames of the matrices
 matrix_filenames = [
@@ -51,7 +49,11 @@ class WordFeatureMatrix(object):
     The word-feature matrix.
     """
 
-    def __init__(self):
+    def __init__(self, vv_path: str):
+
+        # Path to where the files were downloaded
+        self.vv_path = vv_path
+
         # Backing for public properties
         self._matrix: numpy.ndarray = None
         self._word_list: List[str] = None
@@ -145,7 +147,7 @@ class WordFeatureMatrix(object):
 
         # Matrix file is in two halves
         for matrix_filename in matrix_filenames:
-            with open(os.path.join(vv_path, matrix_filename), mode="r", encoding="utf-8") as matrix_file:
+            with open(os.path.join(self.vv_path, matrix_filename), mode="r", encoding="utf-8") as matrix_file:
                 half_matrix = []
                 # Load data for this half of the matrix
                 for line in matrix_file:
@@ -181,7 +183,7 @@ class WordFeatureMatrix(object):
                                  r"(?P<semantic>[a-z.\-()]+)"
                                  r"$")
 
-        with open(os.path.join(vv_path, words_filename), mode="r", encoding="utf-8") as words_file:
+        with open(os.path.join(self.vv_path, words_filename), mode="r", encoding="utf-8") as words_file:
             # Skip the first line
             words_file.readline()
 
@@ -221,7 +223,7 @@ class WordFeatureMatrix(object):
                                     r"(?P<motoric>[01])"
                                     r"$")
 
-        with open(os.path.join(vv_path, features_filename), mode="r", encoding="utf-8") as features_file:
+        with open(os.path.join(self.vv_path, features_filename), mode="r", encoding="utf-8") as features_file:
             # Skip the first line
             features_file.readline()
 
@@ -272,8 +274,12 @@ class WordFeatureMatrix(object):
 
     def save_word_list(self, word_list_out_filepath: str):
         """
-        Save the list of words, and their features, to a specified file (overwrites).
+        Save the list of words, and their features, to a specified file.
         """
+        # Don't overwrite
+        if os.path.isfile(word_list_out_filepath):
+            raise FileExistsError()
+
         with open(word_list_out_filepath, mode="w", encoding="utf-8") as word_list_file:
             for word in self.word_list:
                 feature_list = "\t".join(self.features_for_word(word))
@@ -281,30 +287,49 @@ class WordFeatureMatrix(object):
 
     def save_feature_list(self, feature_list_out_filepath: str):
         """
-        Save the list of features, and their words, to a specified file (overwrites).
+        Save the list of features, and their words, to a specified file.
         """
+        # Don't overwrite
+        if os.path.isfile(feature_list_out_filepath):
+            raise FileExistsError()
+
         with open(feature_list_out_filepath, mode="w", encoding="utf-8") as feature_list_file:
             for feature in self.feature_list:
                 word_list = "\t".join(self.words_for_feature(feature))
                 feature_list_file.write(f"{feature}:\t{word_list}\n")
 
 
-def main():
-    wfm = WordFeatureMatrix()
-    word = "punch"
-    feature = "conversation"
-    logging.info(f"Features for '{word}':")
-    logging.info(wfm.features_for_word(word))
-    logging.info(f"Words for '{feature}':")
-    logging.info(wfm.words_for_feature(feature))
-
-    outdir = "/Users/caiwingfield/Desktop/"
-    wfm.save_word_list(os.path.join(outdir, "words.txt"))
-    wfm.save_feature_list(os.path.join(outdir, "features.txt"))
+def main(args):
+    wfm = WordFeatureMatrix(vv_path=args.vinson_vigliocco_save_directory)
+    if args.features:
+        word = args.features
+        print(f"Features for word '{word}':")
+        for feature in wfm.features_for_word(word):
+            print(f"\t{feature}")
+    if args.words:
+        feature = args.words
+        print(f"Words for feature '{feature}':")
+        for word in wfm.words_for_feature(feature):
+            print(f"\t{word}")
+    if args.savewords:
+        wfm.save_word_list(args.savewords)
+    if args.savefeatures:
+        wfm.save_feature_list(args.savefeatures)
 
 
 if __name__ == '__main__':
     logging.basicConfig(format=logger_format, datefmt=logger_dateformat, level=logging.INFO)
     logger.info("Running %s" % " ".join(sys.argv))
-    main()
+
+    parser = argparse.ArgumentParser(description='Queryable Vinson & Vigliocco (2008) norms.')
+
+    parser.add_argument("vinson_vigliocco_save_directory", type=str,
+                        help="The path to the unzipped Vinson & Vigliocco (2008) norms directory.")
+    parser.add_argument("--savewords", metavar="PATH", type=str, help="Save word list to specified file.")
+    parser.add_argument("--savefeatures", metavar="PATH", type=str, help="Save feature list to specified file.")
+    parser.add_argument("-f", "--features", metavar="WORD", type=str, help="List the features for a specified word.")
+    parser.add_argument("-w", "--words", metavar="FEATURE", type=str, help="List the words for a specified feature.")
+
+    main(parser.parse_args())
+
     logger.info("Done!")
