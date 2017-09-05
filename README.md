@@ -9,27 +9,27 @@ To use, [download the data][1], and unzip it into a location.
 Invoke like this:
 
 ```commandline
-python make_human_readable.py --help
+python human_readable_vv.py --help
 ```
 
 Available operations:
 
-__`python make_human_readable.py <path-to-vv-files> -w <feature>`__
+__`python human_readable_vv.py <path-to-vv-files> -w <feature>`__
 
 > Lists all words for a particular feature, ordered by the number of subjects that produced the feature for that word.
 
-__`python make_human_readable.py <path-to-vv-files> -f <word>`__
+__`python human_readable_vv.py <path-to-vv-files> -f <word>`__
 
 > Lists all features for a particular word, ordered by the number of subjects that produced the feature for that word.
 
-__`python make_human_readable.py <path-to-vv-files> --savewords <path>`__
+__`python human_readable_vv.py <path-to-vv-files> --savewords <path>`__
 
 > Saves a list of words and features in the specified file (which should not exist).  
 > Format of the file will be:  
 > `word: feature1, feature2, ...`  
 > on each line.
 
-__`python make_human_readable.py <path-to-vv-files> --savefeatures <path>`__
+__`python human_readable_vv.py <path-to-vv-files> --savefeatures <path>`__
 
 > Saves a list of features and words in the specified file (which should not exist).  
 > Format of the file will be:  
