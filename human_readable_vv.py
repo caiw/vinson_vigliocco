@@ -44,6 +44,12 @@ N_WORDS = 456
 N_FEATURES = 1029
 
 
+class Term(object):
+    def __init__(self, term: str, count: int):
+        self.count = count
+        self.term = term
+
+
 class WordFeatureMatrix(object):
     """
     The word-feature matrix.
@@ -244,7 +250,7 @@ class WordFeatureMatrix(object):
 
     # Query data
 
-    def features_for_word(self, word: str) -> List[str]:
+    def features_for_word(self, word: str) -> List[Term]:
         """
         List of features for a word.
         """
@@ -259,9 +265,9 @@ class WordFeatureMatrix(object):
         # And sort by the count
         features.sort(key=lambda feature_count_pair: feature_count_pair[1], reverse=True)
 
-        return [feature for feature, count in features]
+        return [Term(feature, count) for feature, count in features]
 
-    def words_for_feature(self, feature: str) -> List[str]:
+    def words_for_feature(self, feature: str) -> List[Term]:
         """
         List of words possessing a feature.
         """
@@ -276,7 +282,7 @@ class WordFeatureMatrix(object):
         # And sort by the count
         words.sort(key=lambda word_count_pair: word_count_pair[1], reverse=True)
 
-        return [word for word, count in words]
+        return [Term(word, count) for word, count in words]
 
     # Save data
 
@@ -290,7 +296,7 @@ class WordFeatureMatrix(object):
 
         with open(word_list_out_filepath, mode="w", encoding="utf-8") as word_list_file:
             for word in self.word_list:
-                feature_list = "\t".join(self.features_for_word(word))
+                feature_list = "\t".join([feature.term for feature in self.features_for_word(word)])
                 word_list_file.write(f"{word}:\t{feature_list}\n")
 
     def save_feature_list(self, feature_list_out_filepath: str):
@@ -303,7 +309,7 @@ class WordFeatureMatrix(object):
 
         with open(feature_list_out_filepath, mode="w", encoding="utf-8") as feature_list_file:
             for feature in self.feature_list:
-                word_list = "\t".join(self.words_for_feature(feature))
+                word_list = "\t".join([word.term for word in self.words_for_feature(feature)])
                 feature_list_file.write(f"{feature}:\t{word_list}\n")
 
 
@@ -313,12 +319,12 @@ def main(args):
         word = args.features
         print(f"Features for word '{word}':")
         for feature in wfm.features_for_word(word):
-            print(f"\t{feature}")
+            print(f"\t{feature.term} ({feature.count})")
     if args.words:
         feature = args.words
         print(f"Words for feature '{feature}':")
         for word in wfm.words_for_feature(feature):
-            print(f"\t{word}")
+            print(f"\t{word.term} ({word.count})")
     if args.savewords:
         wfm.save_word_list(args.savewords)
     if args.savefeatures:
